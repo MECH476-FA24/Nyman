@@ -131,6 +131,9 @@ occur? The lowest?
 # extract date/time of highest ozone concentration
 max_row <- which.max(df_max$ozone_ppm)
 date.time_max <- df_max$datetime[max_row]
+#XL: Trying to use piping to achieve this is encouraged. Same below.
+max_date  <- dplyr::slice_max(df_max, order_by = ozone_ppm, n=1)%>%
+dplyr::select(datetime)
 # extract date/time of lowest ozone concentration
 min_row <- which.min(df_min$ozone_ppm)
 date.time_min <- df_min$datetime[min_row]
@@ -169,6 +172,7 @@ $$
 # create new variable of ug/m3 from ppm and overwrite dataset
 ozone_tibble <- ozone_tibble %>%
   mutate(ozone_ugm3 = 1000*(ozone_ppm*47.998*273.15*637)/(22.4136*(273.15+10)*637))
+#XL: remember to drop the old variable -- ozone_ppm.
 ```
 
 \newpage
