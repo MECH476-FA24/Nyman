@@ -113,7 +113,7 @@ ggtexttable(table, rows = NULL, theme = ttheme("minimal"))
 ```
 #XL: Nice work!
 #XL: you can also try something shown as below. 
-#ozone_sum <- ftc_o3_data %>% 
+#ozone_sum <- ozone_tibble %>% 
 #  summarise(min = min(ozone_ppm), 
 #            quan_25 = quantile(ozone_ppm, probs = 0.25), 
 #            mean = mean(ozone_ppm), 
