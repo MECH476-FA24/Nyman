@@ -113,13 +113,13 @@ ggtexttable(table, rows = NULL, theme = ttheme("minimal"))
 ```
 #XL: Nice work!
 #XL: you can also try something shown as below. 
-#ozone_sum <- df_fem_cal %>% 
-#  summarise(min = min(PM25), 
-#            quan_25 = quantile(PM25, probs = 0.25), 
-#            mean = mean(PM25), 
-#            median = median(PM25), 
-#            quan_75 = quantile(PM25, probs = 0.75), 
-#            max = max(PM25)) %>% 
+#ozone_sum <- ftc_o3_data %>% 
+#  summarise(min = min(ozone_ppm), 
+#            quan_25 = quantile(ozone_ppm, probs = 0.25), 
+#            mean = mean(ozone_ppm), 
+#            median = median(ozone_ppm), 
+#            quan_75 = quantile(ozone_ppm, probs = 0.75), 
+#            max = max(ozone_ppm)) %>% 
 #  knitr::kable(format = "markdown", digits = c(3,3,3,3,3,3))
 \newpage
 
