@@ -146,6 +146,17 @@ ggplot(monthly_tweets, aes(x = month, y = n, fill = user)) + #XL: in geom_bar, w
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
   labs(title = "Number of tweets per month for each senator")
+
+#XL: The grid lines here seems not helpful for visualizing your data, so you can try to remove it. Use theme_bw() to remove your plot background, then use theme() to personalize your plot theme. For example, 
+#theme_bw() + 
+#  theme(axis.title = element_text(size=18, color="black"), 
+#        axis.text = element_text(size = 18, color = "black"), 
+#        panel.border = element_rect(size = 0.8, colour = "black"),
+#        legend.position = c(0.7, 0.88), 
+#        panel.grid.major.x = element_blank(),
+#        panel.grid.major.y = element_line(color = "#F2F2F2", size = 0.5, linetype = "dashed"), 
+#        panel.grid.minor = element_blank())
+
 ```
 Generally the senators aren't anymore active during one time of the year. Senator Cory Gardner specifically tweeted more during September through October. 
 \newpage
