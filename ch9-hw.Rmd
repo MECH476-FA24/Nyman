@@ -1,0 +1,122 @@
+---
+title: 'MECH481A6: Engineering Data Analysis in R'
+subtitle: 'Chapter 9 Homework: Transformations'
+author: "Flynn Nyman"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: pdf_document
+
+---
+
+```{r global-options, include=FALSE}
+# set global options for figures, code, warnings, and messages
+knitr::opts_chunk$set(fig.width=6, fig.height=4, fig.path="../figs/",
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Load packages
+
+```{r load-packages, message=FALSE}
+# load packages for current session
+library(ggplot2)
+library(tidyverse) 
+library(gridExtra) # or library(patchwork) for arranging figures
+library(MASS) # for fitting distributions to your data
+```
+
+# Chapter 9 Homework
+
+This homework will give you practice at transforming and visualizing data and fitting a distribution to a set of data. Note that much of the code needed to complete this homework can be adapted from the [Coursebook Exercises](https://smogdr.github.io/edar_coursebook/transform.html#ch-9-exercises) in Chapter 9.
+
+When a question asks you to make a plot, remember to set a theme, title, 
+subtitle, labels, colors, etc. It is up to you how to personalize your plots, 
+but put in some effort and make the plotting approach consistent throughout
+the document. For example, you could use the same theme for all plots. 
+
+\newpage
+
+## Question 1
+
+Recreate Figure 9.8 (the three EDA plots based on `salary_ps2$salary`), but show the plots on a log-scale x-axis. Plot the histogram with 30 bins and move the legends so that they don't block the data. Does the data in these plots appear more symmetric about the median?  Why or why not?
+
+The data does appear to be more symmetric about the median. The median salary is around $75,000. For one, when applying a log to an axis, it compresses the values, especially the higher end. On the original graphs the few outliers that made much higher than the median salary caused a shift to the left. 
+
+```{r import-clean-data}
+salary_ps2 <- read.csv("./salary_ch9.csv")
+```
+
+```{r plot-log-scale}
+box2 <- ggplot(data = salary_ps2,
+       aes(y = sex,
+           x = salary,
+           fill = sex)) +
+  geom_boxplot(outlier.alpha = 0.2) +
+  scale_x_log10(labels = scales::label_dollar(suffix = "k"))+
+  theme_bw() +
+  theme(legend.position = "none")
+
+hist2 <- ggplot(data = salary_ps2,
+       aes(x = salary,
+           fill = sex)) +
+  geom_histogram(color = "white",
+                 bins = 30) +
+  scale_x_log10(labels = scales::label_dollar(suffix = "k")) +
+  theme_bw() +
+  theme(legend.position = c(0.25, 0.5))
+
+cdf2 <- ggplot(data = salary_ps2,
+       aes(x = salary,
+           color = sex)) +
+  stat_ecdf() +
+  scale_x_log10(labels = scales::label_dollar(suffix = "k")) +
+  theme_bw() +
+  ylab("Quantile") +
+  theme(legend.position = c(0.25, 0.5))
+
+grid.arrange(box2, hist2, cdf2, nrow = 2, ncol = 2)
+
+
+```
+
+## Question 2
+
+Modify the code that created the `sal_simulate` data frame to create a variable that simulates quantiles from a *cumulative distribution*. Plot these data (instead of a histogram).  Hint: instead of `rlnorm()` you will need to use a different log density function that takes a vector of quantiles as input (you will need to specify the quantile vector).  Type ?Lognormal into the Console for help.
+
+```{r fig9-9-cdf, include=FALSE}
+salary_ps2_pos <- salary_ps2 %>%
+  filter(salary > 0)
+fit <- fitdistr(salary_ps2_pos$salary, densfun = "log-normal")
+meanlog <- fit$estimate["meanlog"]
+sdlog <- fit$estimate["sdlog"]
+
+# quantile
+quantiles <- seq(0.01, 0.99, length.out = 100)
+
+sal_simulate <- tibble(
+  quantile = quantiles,
+  simulated_salary = qlnorm(quantiles, meanlog = meanlog, sdlog = sdlog)
+)
+
+# plot 
+plot_cdf <- ggplot(sal_simulate, aes(x = simulated_salary, y = quantile)) +
+  geom_line(color = "blue", size = 1) +
+  scale_x_continuous(labels = scales::label_dollar(suffix = "k")) +
+  labs(x = "Simulated Salary (thousands)", y = "Cumulative Probability") +
+  theme_minimal()
+
+```
+
+## Question 3
+Mutate the `salary_ps2` data frame to create a new column variable that takes the log of the salary data (call that variable `log.salary`).  Then use `fitdistr()` to fit a *normal distribution* to `log.salary`.  What are the resultant parameter estimates for the mean and sd?  Hint: the output of `fitdistr()` is a list; look in the `estimate` entry for these parameters.  How close are these estimates to those calculated in [section 9.6.4](https://smogdr.github.io/edar_coursebook/transform.html#fit-a-log-normal-distribution) of the Coursebook?
+
+```{r fit-nomral}
+salary_ps2 <- salary_ps2 %>%
+  mutate(log.salary = log(salary))
+
+# Fit a normal distribution to log.salary
+fit_log_normal <- fitdistr(salary_ps2$log.salary, densfun = "normal")
+
+
+fit_log_normal$estimate
+#The values are close with the mean being 4.32 and SD .669.
+
+```
