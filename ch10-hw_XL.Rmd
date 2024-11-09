@@ -87,7 +87,7 @@ Group the `blanks` data frame by `id` and calculate mean, median, and standard d
 summary <- airlift_data %>%
   group_by(id) %>%
   summarise(mean(mass_mg), median(mass_mg), sd(mass_mg)) %>%  #XL: If you can name mean(mass_mg), etc. in summarise, then you don't need to rename them. For example, summarise(mean_mg = mean(mass_mg), median_me = median(mass_mg), sd_mg = sd(mass_mg))
-  rename('mean' = 'mean(mass_mg)',                            #XL: Additionally, please pay attention to the  **precision**. Use the `round()` function to avoid reporting more than 0.1 $\mu g$ of precision (or 0.0001 $mg$). For example, round(mass_g, digits = 6). Same for Question 3. 
+  rename('mean' = 'mean(mass_mg)',                            #XL: Additionally, please pay attention to the  **precision**. Use the `round()` function to avoid reporting more than 0.1 $\mu g$ of precision (or 0.0001 $mg$). For example, round(mean(mass_mg), digits = 3). Same for Question 3. 
          'median' = 'median(mass_mg)',
          'sd' = 'sd(mass_mg)') %>%
   print()
